@@ -1,8 +1,17 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
 
+our $timer_stats = {
+    started => 0,
+    active => 0,
+    elapsed => 0,
+};
+
 get '/' => sub {
   my $c = shift;
+
+  # fill in template variables
+  map { $c->stash($_ => $timer_stats->{$_})} qw(started active elapsed);
   $c->render(template => 'index');
 };
 
@@ -12,7 +21,13 @@ __DATA__
 @@ index.html.ep
 % layout 'default';
 % title 'Welcome';
-<h1>Welcome to the Mojolicious real-time web framework!</h1>
+<h1>Event-Driven Programming Demo</h1>
+
+Here's what we know about our timers:
+
+<ul>
+<li>started: <%= $started %></li><li>active: <%= $active %></li><li>elapsed: <%= $elapsed %></li>
+</ul>
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
