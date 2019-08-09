@@ -1,0 +1,16 @@
+This is intended to be a simple example program to demonstrate how to
+do event-driven programming in Mojolicious.
+
+I will use a test-driven development (TDD) approach so that each
+development cycle is small and consists of:
+
+* writing a single new test that's designed to fail
+* implementing code to pass that test
+
+I'll make a git commit after each of those steps, so you can use the
+git commit history to see how functionality was added step by step.
+
+Many users won't ever need to dive into the event-driven aspects of
+Mojolicious programming, but if you do ever find yourself asking "I
+wonder if I could do this task asynchronously?", then I hope that this
+example program can be a useful guide to help you find a solution.
