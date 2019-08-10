@@ -24,16 +24,19 @@ get '/add_timer/#seconds' => sub {
     $c->render(text => "4d19f4c4: number of seconds to wait can't be 0!");
   } else {
 
+    # Pointer to app's global 'count' data
+    my $stats = $c->app->{timer_stats};
+
     # Add a timer (copied from Mojo::IOLoop man page)
     Mojo::IOLoop->timer($s => sub {
 	my $loop = shift;
 	# Figure out what the following should be later
 	# $loop->remove($id);
+	$stats->{active}--;
+	$stats->{elapsed}++;
 	say "Timer expired";
     });
 
-    # Now update our app's global data
-    my $stats = $c->app->{timer_stats};
     $stats->{started}++;
     $stats->{active}++;
 
