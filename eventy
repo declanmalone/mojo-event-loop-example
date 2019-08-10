@@ -1,4 +1,8 @@
 #!/usr/bin/env perl
+
+# Apparently this needs to be at the top or tests won't run.
+package main;
+
 use Mojolicious::Lite;
 use Mojo::IOLoop;
 
@@ -14,6 +18,18 @@ app->{bounce_stats} = {
     ends => 0,
     total => 0,
 };
+
+my $trampoline = app->{trampoline} = Trampoline->new;
+
+# Register ourselves as consumer of events emitted by trampoline
+$trampoline->on(
+    started => sub {
+	my ($emitter, $params) = @_; # unused
+	app->{bounce_stats}->{starts}++;
+	# b975fad2: non-local control flow with emit/subscribe
+	app->{timer_stats}->{started}++;
+	app->{timer_stats}->{active}++;
+    });
 
 get '/' => sub {
   my $c = shift;
@@ -45,8 +61,13 @@ get '/add_timer/#seconds' => sub {
 	say "Timer expired";
     });
 
-    $stats->{started}++;
-    $stats->{active}++;
+    if ("b975fad2") {
+	$c->app->{trampoline}->started;
+    } else {
+	# old code migrated to event watcher in main
+	$stats->{started}++;
+	$stats->{active}++;
+    }
 
     $c->render(text => "Added a timer of $s seconds.\n"
 	       # . "Set global 'started' count to $stats->{started}\n"
@@ -57,7 +78,32 @@ get '/add_timer/#seconds' => sub {
 # Start event loop if necessary
 Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
+#
+# Embedded package...
+#
+
+package Trampoline;
+use Mojo::Base 'Mojo::EventEmitter';
+
+sub started {
+    my $self = shift;
+    $self->emit(started => undef);
+}
+
+sub ended {
+    my $self = shift;
+    $self->emit(ended => undef);
+}
+
+1;
+
+# we need to go back to the main package so that our __DATA__ section
+# will be read in.
+package main;
+
+# Apparently, this needs to go at the end or tests won't run
 app->start;
+
 __DATA__
 
 @@ index.html.ep
