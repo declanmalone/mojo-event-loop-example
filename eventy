@@ -13,7 +13,7 @@ app->{timer_stats} = {
 };
 
 # counts of timer start, end events that we consume
-app->{bounce_stats} = {
+app->{event_stats} = {
     starts => 0,
     ends => 0,
     total => 0,
@@ -25,8 +25,8 @@ my $noisy_timer = app->{noisy_timer} = NoisyTimer->new;
 $noisy_timer->on(
     started => sub {
 	my ($emitter, $params) = @_; # unused
-	app->{bounce_stats}->{starts}++;
-	app->{bounce_stats}->{total}++; # f4751860
+	app->{event_stats}->{starts}++;
+	app->{event_stats}->{total}++; # f4751860
 	# b975fad2: non-local control flow with emit/subscribe
 	app->{timer_stats}->{started}++;
 	app->{timer_stats}->{active}++;
@@ -34,8 +34,8 @@ $noisy_timer->on(
 # Apparently you can't set up multiple consumers with the one statement
 $noisy_timer->on(
     ended => sub {		# 8ce61d2a
-	app->{bounce_stats}->{ends}++;
-	app->{bounce_stats}->{total}++; # f4751860
+	app->{event_stats}->{ends}++;
+	app->{event_stats}->{total}++; # f4751860
 	app->{timer_stats}->{active}--;
 	app->{timer_stats}->{elapsed}++;
     });
@@ -45,7 +45,7 @@ get '/' => sub {
 
   # fill in template variables
   map { $c->stash($_ => app->{timer_stats}->{$_})} qw(started active elapsed);
-  map { $c->stash($_ => app->{bounce_stats}->{$_})} qw(starts ends total);
+  map { $c->stash($_ => app->{event_stats}->{$_})} qw(starts ends total);
   $c->render(template => 'index');
 };
 
