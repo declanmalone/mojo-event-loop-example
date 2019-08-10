@@ -92,6 +92,7 @@ ok($blist->[0] > 0) or say "b975fad2: Count started timers/events";
 ok($blist->[2] > 0) or say "f4751860: count total consumed events";
 
 # 8ce61d2a: migrate timer ending code using event trampoline
+ok($blist->[1] > 0) or say "8ce61d2a: count timer finish events";
 
 
 done_testing();
