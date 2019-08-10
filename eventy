@@ -19,7 +19,11 @@ get '/add_timer/:seconds' => sub {
   my $c = shift;
   my $s = $c->param('seconds');
 
-  $c->render(text => "would add a timer of $s seconds");
+  if (0 == $s) {
+    $c->render(text => "4d19f4c4: number of seconds to wait can't be 0!");
+  } else {
+    $c->render(text => "would add a timer of $s seconds");
+  }
 };
 
 app->start;
