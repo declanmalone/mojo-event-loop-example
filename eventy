@@ -26,6 +26,7 @@ $trampoline->on(
     started => sub {
 	my ($emitter, $params) = @_; # unused
 	app->{bounce_stats}->{starts}++;
+	app->{bounce_stats}->{total}++; # f4751860
 	# b975fad2: non-local control flow with emit/subscribe
 	app->{timer_stats}->{started}++;
 	app->{timer_stats}->{active}++;
