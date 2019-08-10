@@ -47,7 +47,11 @@ is(undef, get_counts()) or die "Internal testing error (get_counts)";
 
 # Now the real test: check that our home page has updated totals
 $t->get_ok("/")->status_is(200);
-is_deeply(get_counts(), [1,0,0], "a07a314e: are timer counts updated?");
+is(get_counts()->[0],1,  "a07a314e: is 'started' count updated?");
+
+# 0ec96f56: Is 'active' count updated?
+is_deeply(get_counts(), [1,1,0], "0ec96f56: is 'active' count updated?");
+
 
 
 done_testing();
