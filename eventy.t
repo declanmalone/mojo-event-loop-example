@@ -52,6 +52,11 @@ is(get_counts()->[0],1,  "a07a314e: is 'started' count updated?");
 # 0ec96f56: Is 'active' count updated?
 is_deeply(get_counts(), [1,1,0], "0ec96f56: is 'active' count updated?");
 
+# fc9e616a: Can we wait for less than a second?
+$t->get_ok("/add_timer/0.5")->status_is(200);
+$t->content_unlike(qr/4d19f4c4/);
+
+# a9922c5e: does an expiring timer update count?
 
 
 done_testing();
