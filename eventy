@@ -31,6 +31,14 @@ $trampoline->on(
 	app->{timer_stats}->{started}++;
 	app->{timer_stats}->{active}++;
     });
+# Apparently you can't set up multiple consumers with the one statement
+$trampoline->on(
+    ended => sub {		# 8ce61d2a
+	app->{bounce_stats}->{ends}++;
+	app->{bounce_stats}->{total}++; # f4751860
+	app->{timer_stats}->{active}--;
+	app->{timer_stats}->{elapsed}++;
+    });
 
 get '/' => sub {
   my $c = shift;
@@ -55,10 +63,13 @@ get '/add_timer/#seconds' => sub {
     # Add a timer (copied from Mojo::IOLoop man page)
     Mojo::IOLoop->timer($s => sub {
 	my $loop = shift;
-	# Figure out what the following should be later
-	# $loop->remove($id);
-	$stats->{active}--;
-	$stats->{elapsed}++;
+	if ("8ce61d2a") {
+	    $c->app->{trampoline}->ended;
+	} else {
+	    # old code migrated to event watcher in main
+	    $stats->{active}--;
+	    $stats->{elapsed}++;
+	}
 	say "Timer expired";
     });
 
