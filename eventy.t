@@ -57,6 +57,9 @@ $t->get_ok("/add_timer/0.5")->status_is(200);
 $t->content_unlike(qr/4d19f4c4/);   # timer can't be zero
 
 # a9922c5e: does an expiring timer update count?
+sleep(1);
+$t->get_ok("/")->status_is(200);
+is_deeply(get_counts(), [2,1,1], "a9922c5e: counter expires OK?");
 
 
 done_testing();
