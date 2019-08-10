@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
+use Mojo::IOLoop;
 
 our $timer_stats = {
     started => 0,
@@ -22,9 +23,26 @@ get '/add_timer/:seconds' => sub {
   if (0 == $s) {
     $c->render(text => "4d19f4c4: number of seconds to wait can't be 0!");
   } else {
-    $c->render(text => "would add a timer of $s seconds");
+
+    # Add a timer (copied from Mojo::IOLoop man page)
+    Mojo::IOLoop->timer($s => sub {
+	my $loop = shift;
+	# Figure out what the following should be later
+	# $loop->remove($id);
+    });
+
+    # Now update our app's global data
+    my $stats = $c->app->{timer_stats};
+    $stats->{started}++;
+
+    $c->render(text => "Added a timer of $s seconds.\n" .
+	       "Set global 'started' count to $stats->{started}\n"
+    );
   }
 };
+
+# Start event loop if necessary
+Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 app->start;
 __DATA__
