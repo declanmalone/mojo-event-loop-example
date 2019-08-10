@@ -86,6 +86,12 @@ my $blist = get_bounces();
 isnt(undef, $blist, "a3838fd0: Count of bounces in / page?");
 
 # b975fad2: non-local control flow with emit/subscribe
-ok($blist->[0] > 0) or say "b975fad2: Trampoline?";
+ok($blist->[0] > 0) or say "b975fad2: Count started timers/events";
+
+# f4751860: make sure "total events recieved" counter is updated
+ok($blist->[2] > 0) or say "f4751860: count total consumed events";
+
+# 8ce61d2a: migrate timer ending code using event trampoline
+
 
 done_testing();
