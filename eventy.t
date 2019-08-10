@@ -108,7 +108,9 @@ is($starts, $started,            'start events = started count?');
 is($ends, $elapsed,              'end events = elapsed count?');
 is($starts + $ends, $total,      'event tally correct?');
 is($total, $active + $elapsed*2, 'two events for every elapsed?');
-
-
+ 
+# 4705ca02: Introspect into the app to see if noisy_timer can timer
+my $noisy_timer = $t->app->{noisy_timer};
+ok($noisy_timer->can("timer")) or say "Has NoisyTimer got a timer method?";
 
 done_testing();
