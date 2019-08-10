@@ -16,7 +16,7 @@ get '/' => sub {
   $c->render(template => 'index');
 };
 
-get '/add_timer/:seconds' => sub {
+get '/add_timer/#seconds' => sub {
   my $c = shift;
   my $s = $c->param('seconds');
 
@@ -35,9 +35,10 @@ get '/add_timer/:seconds' => sub {
     # Now update our app's global data
     my $stats = $c->app->{timer_stats};
     $stats->{started}++;
+    $stats->{active}++;
 
-    $c->render(text => "Added a timer of $s seconds.\n" .
-	       "Set global 'started' count to $stats->{started}\n"
+    $c->render(text => "Added a timer of $s seconds.\n"
+	       # . "Set global 'started' count to $stats->{started}\n"
     );
   }
 };
