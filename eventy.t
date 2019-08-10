@@ -61,5 +61,29 @@ sleep(1);
 $t->get_ok("/")->status_is(200);
 is_deeply(get_counts(), [2,1,1], "a9922c5e: counter expires OK?");
 
+# b975fad2: non-local control flow with emit/subscribe
+#
+# Introduce a temporary "trampoline" event emitter so that:
+#
+# * we can migrate towards better refactored code
+# * we can introduce event emitters
+# * we can write our test before the code
+# * we can continue to evolve the code without breaking past/future tests
+
+# parse new section of /
+sub get_bounces {
+    local($_) = $t->tx->result->body || die;
+    if (/starts:\s*(\d+).*ends:\s*(\d+).*total:\s*(\d+)/) {
+      return [$1,$2,$3];
+    } else {
+      return undef;
+    }
+}
+my ($starts, $ends, $total);
+my $blist = get_bounces();
+
+# a3838fd0: interim test to see if / has this section
+isnt(undef, $blist, "a3838fd0: Count of bounces in / page?");
+
 
 done_testing();
