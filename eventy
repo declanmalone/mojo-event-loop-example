@@ -8,11 +8,19 @@ app->{timer_stats} = {
     elapsed => 0,
 };
 
+# counts of timer start, end events that we consume
+app->{bounce_stats} = {
+    starts => 0,
+    ends => 0,
+    total => 0,
+};
+
 get '/' => sub {
   my $c = shift;
 
   # fill in template variables
   map { $c->stash($_ => app->{timer_stats}->{$_})} qw(started active elapsed);
+  map { $c->stash($_ => app->{bounce_stats}->{$_})} qw(starts ends total);
   $c->render(template => 'index');
 };
 
@@ -61,6 +69,12 @@ Here's what we know about our timers:
 
 <ul>
 <li>started: <%= $started %></li><li>active: <%= $active %></li><li>elapsed: <%= $elapsed %></li>
+</ul>
+
+And here are the stats on events that we've consumed:
+
+<ul>
+<li>starts: <%= $starts %></li><li>ends: <%= $ends %></li><li>total: <%= $total %></li>
 </ul>
 
 @@ layouts/default.html.ep
