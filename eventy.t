@@ -3,7 +3,18 @@ use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
 
-my $t = Test::Mojo->new(Mojo::File->new('./eventy'));
+# Run our script as a server so that it is stateful?
+my $t;
+if (1) {
+  my $server = Mojo::Server::Daemon->new(listen => ["http://127.0.0.1:5555"]);
+  my $app = $server->load_app('./eventy') || die;
+  $server->start;
+
+  $t = Test::Mojo->new($app);
+} else {
+  $t = Test::Mojo->new(Mojo::File->new('./eventy'));
+}
+
 
 $t->get_ok('/')->status_is(200)->content_like(qr/started:.*active:.*elapsed:/i);
 

@@ -2,7 +2,7 @@
 use Mojolicious::Lite;
 use Mojo::IOLoop;
 
-our $timer_stats = {
+app->{timer_stats} = {
     started => 0,
     active => 0,
     elapsed => 0,
@@ -12,7 +12,7 @@ get '/' => sub {
   my $c = shift;
 
   # fill in template variables
-  map { $c->stash($_ => $timer_stats->{$_})} qw(started active elapsed);
+  map { $c->stash($_ => app->{timer_stats}->{$_})} qw(started active elapsed);
   $c->render(template => 'index');
 };
 
@@ -29,6 +29,7 @@ get '/add_timer/:seconds' => sub {
 	my $loop = shift;
 	# Figure out what the following should be later
 	# $loop->remove($id);
+	say "Timer expired";
     });
 
     # Now update our app's global data
