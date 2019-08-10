@@ -85,5 +85,7 @@ my $blist = get_bounces();
 # a3838fd0: interim test to see if / has this section
 isnt(undef, $blist, "a3838fd0: Count of bounces in / page?");
 
+# b975fad2: non-local control flow with emit/subscribe
+ok($blist->[0] > 0) or say "b975fad2: Trampoline?";
 
 done_testing();
