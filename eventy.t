@@ -94,5 +94,21 @@ ok($blist->[2] > 0) or say "f4751860: count total consumed events";
 # 8ce61d2a: migrate timer ending code using event trampoline
 ok($blist->[1] > 0) or say "8ce61d2a: count timer finish events";
 
+# Conformance tests. We expect these all to pass since we didn't trip
+# up and fail any tests from before the migration to using the
+# trampoline. Usually we write tests so that they will fail the first
+# time around, but since these tests won't lead to new functionality,
+# we can ignore that principle here.
+
+($starts, $ends, $total) = @{$blist};   # unpack event counts
+my ($started, $active, $elapsed) = @{get_counts()};
+
+is($started, $active + $elapsed, 'started = active + elapsed counts?');
+is($starts, $started,            'start events = started count?');
+is($ends, $elapsed,              'end events = elapsed count?');
+is($starts + $ends, $total,      'event tally correct?');
+is($total, $active + $elapsed*2, 'two events for every elapsed?');
+
+
 
 done_testing();
