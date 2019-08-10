@@ -5,7 +5,7 @@ use Test::Mojo;
 
 # Run our script as a server so that it is stateful?
 my $t;
-if (1) {
+if (0) {
   my $server = Mojo::Server::Daemon->new(listen => ["http://127.0.0.1:5555"]);
   my $app = $server->load_app('./eventy') || die;
   $server->start;
