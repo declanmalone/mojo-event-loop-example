@@ -19,10 +19,10 @@ app->{bounce_stats} = {
     total => 0,
 };
 
-my $trampoline = app->{trampoline} = Trampoline->new;
+my $noisy_timer = app->{noisy_timer} = NoisyTimer->new;
 
-# Register ourselves as consumer of events emitted by trampoline
-$trampoline->on(
+# Register ourselves as consumer of events emitted by noisy_timer
+$noisy_timer->on(
     started => sub {
 	my ($emitter, $params) = @_; # unused
 	app->{bounce_stats}->{starts}++;
@@ -32,7 +32,7 @@ $trampoline->on(
 	app->{timer_stats}->{active}++;
     });
 # Apparently you can't set up multiple consumers with the one statement
-$trampoline->on(
+$noisy_timer->on(
     ended => sub {		# 8ce61d2a
 	app->{bounce_stats}->{ends}++;
 	app->{bounce_stats}->{total}++; # f4751860
@@ -64,7 +64,7 @@ get '/add_timer/#seconds' => sub {
     Mojo::IOLoop->timer($s => sub {
 	my $loop = shift;
 	if ("8ce61d2a") {
-	    $c->app->{trampoline}->ended;
+	    $c->app->{noisy_timer}->ended;
 	} else {
 	    # old code migrated to event watcher in main
 	    $stats->{active}--;
@@ -74,7 +74,7 @@ get '/add_timer/#seconds' => sub {
     });
 
     if ("b975fad2") {
-	$c->app->{trampoline}->started;
+	$c->app->{noisy_timer}->started;
     } else {
 	# old code migrated to event watcher in main
 	$stats->{started}++;
@@ -94,7 +94,7 @@ Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 # Embedded package...
 #
 
-package Trampoline;
+package NoisyTimer;
 use Mojo::Base 'Mojo::EventEmitter';
 
 sub started {
