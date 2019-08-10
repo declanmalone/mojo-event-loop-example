@@ -15,6 +15,13 @@ get '/' => sub {
   $c->render(template => 'index');
 };
 
+get '/add_timer/:seconds' => sub {
+  my $c = shift;
+  my $s = $c->param('seconds');
+
+  $c->render(text => "would add a timer of $s seconds");
+};
+
 app->start;
 __DATA__
 
